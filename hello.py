@@ -10,6 +10,11 @@ def de_get():
 
 @app.route('/', methods=['POST'])
 def do_post():
+    contentType = request.headers.get('Content-Type')
+
+    req = request.json
+    return req['challenge']
+    print(req['challenge'])
     if "challenge" in request.form:
         return request.form["challenge"]
     for it in request.form:
