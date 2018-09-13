@@ -1,4 +1,6 @@
+from __future__ import print_function
 from flask import Flask, request
+import sys
 
 app = Flask(__name__)
 
@@ -11,7 +13,7 @@ def do_post():
     if "challenge" in request.form:
         return request.form["challenge"]
     for it in request.form:
-        print it
+        print (it,file=sys.stdout)
     return "hi"
 
 if __name__ == '__main__':
