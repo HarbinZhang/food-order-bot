@@ -14,7 +14,8 @@ def do_post():
         return request.form["challenge"]
     for it in request.form:
         print (it,file=sys.stdout)
-    return "hi"
+    print (request.form, sys.stdout)
+    return "OMG"
 
 if __name__ == '__main__':
     app.debug = True
