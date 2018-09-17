@@ -34,7 +34,7 @@ def do_post():
 
 if __name__ == '__main__':
     logging.basicConfig(filename="log/debug.log",
-                    format='%(asctime)s:%(filename)s:%(funcName)s:%(lineno)d %(name)s %(levelname)s %(message)s',
+                    format='%(levelname)s\t%(asctime)s:%(filename)s:%(funcName)s:%(lineno)d %(name)s  %(message)s',
                     datefmt='%H:%M:%S',
                     level=logging.DEBUG)
     app.debug = True

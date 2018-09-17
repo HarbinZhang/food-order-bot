@@ -17,10 +17,13 @@ def handlePayload(req):
 
 
 def handleJson(req):
-    logging.info("here hi")
     if 'challenge' in req:
         return handleChallenge(req)
     elif 'event' in req:
+        if not checkUserOfEvent(req['event'], 'UBSMN15JA'):
+            send({"text":"Who are you?"})
+            logging.warning("Unauthorized User")
+            return "OK"
         params = req['event']['text'].split(' ')
         if len(params) < 2:
             logging.warning("invalid params for event")
@@ -41,6 +44,13 @@ def handleJson(req):
         res = "OMG"
     return res
 
+
+def checkUserOfEvent(event, id):
+    if 'user' not in event:
+        return False
+    if event['user'] != id:
+        return False
+    return True
 
 def statOrder():
     send(statOrderBody)
@@ -72,11 +82,11 @@ def scheduleJob():
     sched.start()
 
 def sendAlert_1hour():
-    body = {"text":"<!here> food order will be closed in 10 min."}
+    body = {"text":"<!here> food order will be closed in 1 hour."}
     send(body)
 
 def sendAlert_10min():
-    body = {"text":"<!here> food order will be closed in 1 hour."}
+    body = {"text":"<!here> food order will be closed in 10 min."}
     send(body)
 
 def closeAlert():
