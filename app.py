@@ -2,7 +2,8 @@ from __future__ import print_function
 from flask import Flask, request
 import sys
 
-from helper import *
+from src.helper import *
+import logging
 
 
 app = Flask(__name__)
@@ -26,11 +27,15 @@ def do_post():
         for it in request.form:
             print (it,file=sys.stdout)
         print (request.form, sys.stdout)
-        return "OMP"
+        return "Invalid request"
 
 
 
 
 if __name__ == '__main__':
+    logging.basicConfig(filename="log/warning.log",
+                    format='%(asctime)s:%(filename)s:%(funcName)s:%(lineno)d %(name)s %(levelname)s %(message)s',
+                    datefmt='%H:%M:%S',
+                    level=logging.DEBUG)
     app.debug = True
     app.run(host ='0.0.0.0', port=5000)
