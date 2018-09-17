@@ -33,7 +33,7 @@ def do_post():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(filename="log/warning.log",
+    logging.basicConfig(filename="log/debug.log",
                     format='%(asctime)s:%(filename)s:%(funcName)s:%(lineno)d %(name)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',
                     level=logging.DEBUG)
