@@ -9,6 +9,7 @@ import logging
 
 def handlePayload(req):
     if 'payload' not in req:
+        logging.warning("invalid params for payload")
         return "Invalid Params"
     payload = json.loads(req['payload'])
     print payload['actions']
@@ -22,15 +23,18 @@ def handleJson(req):
     elif 'event' in req:
         params = req['event']['text'].split(' ')
         if len(params) < 2:
+            logging.warning("invalid params for event")
             return "Invalid Params"
         if params[1] == 'url':
             if postOrder(params):
                 scheduleJob()
             else:
+                logging.warning("invalid params for url")
                 return "Invalid Params"
         elif params[1] == 'stat':
             statOrder()
         else:
+            logging.warning("invalid params for actions")
             return "Invalid Params"
         res = "OK"
     else:
