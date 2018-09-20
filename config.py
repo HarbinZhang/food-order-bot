@@ -1,5 +1,6 @@
 config = {
-    "foodUrl" : "https://hooks.slack.com/services/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"
+    "foodUrl" : "https://hooks.slack.com/services/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",
+    "testUrl" : "https://hooks.slack.com/services/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"
 }
 
 statOrderBody ={
