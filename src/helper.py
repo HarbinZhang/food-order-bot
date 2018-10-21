@@ -118,7 +118,7 @@ def scheduleJob(channel, user, date_str):
     job2 = scheduler.add_job(lambda: sendAlert_10min(channel), 'cron', year=remind_date.year, month=remind_date.month, 
             day=remind_date.day, hour=10, minute=50)    
     job3 = scheduler.add_job(lambda: closeAlert(channel, user), 'cron', year=remind_date.year, month=remind_date.month, 
-            day=remind_date.day, hour=11, minute=00)
+            day=remind_date.day, hour=13, minute=40)
 
     # channel_jobs_dict[channel].append(job1)
     channel_jobs_dict[channel].append(job2)
