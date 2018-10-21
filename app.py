@@ -16,7 +16,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 # TODO: SSL
 
 app = Flask(__name__)
-scheduler = BackgroundScheduler()
+# scheduler = BackgroundScheduler()
 
 @app.route('/', methods=['GET'])
 
@@ -48,5 +48,5 @@ if __name__ == '__main__':
                     datefmt='%H:%M:%S',
                     level=logging.DEBUG)
     app.debug = True
-    scheduler.start()
+    # scheduler.start()
     app.run(host ='0.0.0.0', port=5000)

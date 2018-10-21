@@ -1,15 +1,11 @@
 from config import config, statOrderBody, helperBody
 import requests
 import time, datetime
-# from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.background import BackgroundScheduler
 import json
 import logging
-from app import scheduler
 
 channel_jobs_dict = {}
-# if not scheduler:
-#     scheduler = BackgroundScheduler()
-# scheduler = BackgroundScheduler({'apscheduler.timezone': 'America/Los_Angeles'})
 
 def handlePayload(req):
     if 'payload' not in req:
@@ -18,7 +14,6 @@ def handlePayload(req):
     payload = json.loads(req['payload'])
     print payload['actions']
     # return statOrderBody
-
 
 def handleJson(req):
     if 'challenge' in req:
@@ -70,7 +65,7 @@ def clearJobs(channel):
     else:
         global scheduler
         for job in channel_jobs_dict[channel]:
-            scheduler.remove_job(job)
+            job.remove()
         channel_jobs_dict[channel] = []
         send(channel, {"text":"Scheduled jobs have been cleared."})
 
@@ -79,7 +74,7 @@ def showStatus(channel):
     if channel not in channel_jobs_dict:
         send(channel, {"text":"No record for this channel."})
     else:
-        send(channel, {"text":"This channel has "+str(len(channel_jobs_dict[channel])/3)+" scheduled jobs."})
+        send(channel, {"text":"This channel has "+str(len(channel_jobs_dict[channel])/2)+" scheduled jobs."})
 
 def checkUserOfEvent(event, id):
     if 'user' not in event:
@@ -108,7 +103,7 @@ def postOrder(params, channel, date_str):
     return True
 
 def scheduleJob(channel, user, date_str):
-    global scheduler
+    scheduler = BackgroundScheduler()
 
     remind_date = datetime.date.today()
     if date_str == 'tomorrow':
@@ -118,18 +113,18 @@ def scheduleJob(channel, user, date_str):
     if channel not in channel_jobs_dict:
         channel_jobs_dict[channel] = []
     
-    job1 = scheduler.add_job(lambda: sendAlert_1hour(channel), 'cron', year=remind_date.year, month=remind_date.month, 
-            day=remind_date.day, hour=10, minute=00)
+    # job1 = scheduler.add_job(lambda: sendAlert_1hour(channel), 'cron', year=remind_date.year, month=remind_date.month, 
+    #         day=remind_date.day, hour=10, minute=00)
     job2 = scheduler.add_job(lambda: sendAlert_10min(channel), 'cron', year=remind_date.year, month=remind_date.month, 
             day=remind_date.day, hour=10, minute=50)    
     job3 = scheduler.add_job(lambda: closeAlert(channel, user), 'cron', year=remind_date.year, month=remind_date.month, 
-            day=remind_date.day, hour=11, minute=00)                    
+            day=remind_date.day, hour=11, minute=00)
 
-    channel_jobs_dict[channel].append(job1.id)
-    channel_jobs_dict[channel].append(job2.id)
-    channel_jobs_dict[channel].append(job3.id) 
+    # channel_jobs_dict[channel].append(job1)
+    channel_jobs_dict[channel].append(job2)
+    channel_jobs_dict[channel].append(job3) 
          
-    # scheduler.start()
+    scheduler.start()
 
 def sendAlert_1hour(channel):
     body = {"text":"<!here> food order will be closed in 1 hour."}
@@ -149,4 +144,3 @@ def send(channel, body):
 
 def handleChallenge(req):
     return req['challenge']
-
