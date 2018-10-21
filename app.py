@@ -12,6 +12,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 # TODO: show sched
 # TODO: multi language option
 # TODO: AI talk
+# TODO: database for reviews
+# TODO: SSL
 
 app = Flask(__name__)
 scheduler = BackgroundScheduler()
