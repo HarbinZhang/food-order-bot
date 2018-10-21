@@ -4,6 +4,7 @@ import sys
 
 from src.helper import *
 import logging
+from apscheduler.schedulers.background import BackgroundScheduler
 
 # TODO: more send options
 # TODO: auth 
@@ -13,6 +14,7 @@ import logging
 # TODO: AI talk
 
 app = Flask(__name__)
+scheduler = BackgroundScheduler()
 
 @app.route('/', methods=['GET'])
 

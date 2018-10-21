@@ -1,12 +1,14 @@
 from config import config, statOrderBody, helperBody
 import requests
 import time, datetime
-from apscheduler.schedulers.background import BackgroundScheduler
+# from apscheduler.schedulers.background import BackgroundScheduler
 import json
 import logging
+from app import scheduler
 
 channel_jobs_dict = {}
-scheduler = BackgroundScheduler()
+# if not scheduler:
+#     scheduler = BackgroundScheduler()
 # scheduler = BackgroundScheduler({'apscheduler.timezone': 'America/Los_Angeles'})
 
 def handlePayload(req):
