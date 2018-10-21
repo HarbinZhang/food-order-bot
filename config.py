@@ -1,7 +1,26 @@
 config = {
     "foodUrl" : "https://hooks.slack.com/services/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",
-    "testUrl" : "https://hooks.slack.com/services/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"
+    "test1Url" : "https://hooks.slack.com/services/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",
+    "test2Url" : "https://hooks.slack.com/services/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",
+    "CCSAZ5M0T": "https://hooks.slack.com/services/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",
+    "GCX98V9RN": "https://hooks.slack.com/services/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",
+    "G4G6YHQM6": "https://hooks.slack.com/services/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"
 }
+
+helperBody ={
+    "attachments": [
+        {
+            "callback_id": "helper",
+            "color": "#3AA3E3",
+            "text": "Usage:	@food-order-bot COMMAND [PARAMS]\nCommands:\n"+
+            "\t\ttom(orrow)\t\t[url] [event_name(default:demo)]\n"+
+            "\t\ttod(ay)   \t\t\t[url] [event_name(default:demo)]\n"+
+            "\t\tclear\t\t\t\t   clear all scheduled reminders in this channel\n"+
+            "\t\tstatus\t\t\t\t show #reminders in this channel",            
+        }
+    ]
+}
+
 
 statOrderBody ={
     "text": "Please rate your food experience",

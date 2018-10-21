@@ -5,6 +5,12 @@ import sys
 from src.helper import *
 import logging
 
+# TODO: more send options
+# TODO: auth 
+# TODO: clear sched
+# TODO: show sched
+# TODO: multi language option
+# TODO: AI talk
 
 app = Flask(__name__)
 
