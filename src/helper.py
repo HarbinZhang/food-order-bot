@@ -6,7 +6,8 @@ import json
 import logging
 
 channel_jobs_dict = {}
-scheduler = BackgroundScheduler({'apscheduler.timezone': 'America/Los_Angeles'})
+scheduler = BackgroundScheduler()
+# scheduler = BackgroundScheduler({'apscheduler.timezone': 'America/Los_Angeles'})
 
 def handlePayload(req):
     if 'payload' not in req:
@@ -53,6 +54,7 @@ def handleJson(req):
             clearJobs(channel)
         else:
             logging.warning("invalid params for actions")
+            send(channel, {"text":"Cannot understand your command..."})
             return "Invalid Params"
         res = "OK"
     else:
