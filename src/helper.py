@@ -32,13 +32,13 @@ def handleJson(req):
             logging.warning("invalid params for event")
             return "Invalid Params"
 
-        if params[1].startswith('tom'):
+        elif params[1].startswith('tom'):
             if postOrder(params, channel, 'tomorrow'):
                 scheduleJob(channel, user, 'tomorrow')
             else:
                 logging.warning("invalid params for tomorrow")
                 return "Invalid Params"
-        if params[1].startswith('tod'):
+        elif params[1].startswith('tod'):
             if postOrder(params, channel, 'today'):
                 scheduleJob(channel, user, 'today')
             else:
