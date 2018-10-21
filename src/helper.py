@@ -129,7 +129,7 @@ def scheduleJob(channel, user, date_str):
     channel_jobs_dict[channel].append(job2.id)
     channel_jobs_dict[channel].append(job3.id) 
          
-    scheduler.start()
+    # scheduler.start()
 
 def sendAlert_1hour(channel):
     body = {"text":"<!here> food order will be closed in 1 hour."}

@@ -46,4 +46,5 @@ if __name__ == '__main__':
                     datefmt='%H:%M:%S',
                     level=logging.DEBUG)
     app.debug = True
+    scheduler.start()
     app.run(host ='0.0.0.0', port=5000)
