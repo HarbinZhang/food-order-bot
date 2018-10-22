@@ -61,19 +61,23 @@ def handleJson(req):
 def clearJobs(channel):
     global channel_jobs_dict
     if channel not in channel_jobs_dict:
+        logging.warn("No record for this channel"+channel)
         send(channel, {"text":"No record for this channel."})
     else:
-        global scheduler
         for job in channel_jobs_dict[channel]:
+            logging.debug("job removed: " + job)
             job.remove()
         channel_jobs_dict[channel] = []
+        logging.info("Scheduled jobs have been cleared.")
         send(channel, {"text":"Scheduled jobs have been cleared."})
 
 def showStatus(channel):
     global channel_jobs_dict
     if channel not in channel_jobs_dict:
+        logging.warn("No record for this channel.")
         send(channel, {"text":"No record for this channel."})
     else:
+        logging.debug("This channel has "+str(len(channel_jobs_dict[channel])/2)+" scheduled jobs.")
         send(channel, {"text":"This channel has "+str(len(channel_jobs_dict[channel])/2)+" scheduled jobs."})
 
 def checkUserOfEvent(event, id):
