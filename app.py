@@ -5,6 +5,7 @@ import sys
 from src.helper import *
 import logging
 from apscheduler.schedulers.background import BackgroundScheduler
+from config import statOrderBody
 
 # TODO: more send options
 # TODO: auth 
@@ -32,7 +33,7 @@ def do_post():
         return res
     elif contentType == 'application/x-www-form-urlencoded':
         res = handlePayload(request.form)
-        return res
+        return 200
     else:
         for it in request.form:
             print (it,file=sys.stdout)

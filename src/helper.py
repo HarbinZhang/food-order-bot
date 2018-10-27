@@ -13,7 +13,8 @@ def handlePayload(req):
         return "Invalid Params"
     payload = json.loads(req['payload'])
     print payload['actions']
-    # return statOrderBody
+    print req
+    return statOrderBody
 
 def handleJson(req):
     if 'challenge' in req:
