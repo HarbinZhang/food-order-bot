@@ -1,22 +1,72 @@
-from config import config, statOrderBody, helperBody
+from config import config, statOrderBody, helperBody, ephemeralBody, rateToScore
 import requests
 import time, datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 import json
 import logging
+import sqlite3
+import os
+from flask import g
+
 
 channel_jobs_dict = {}
+channel_food_order_count_dict = {}
+channel_user_food_rate_dict = {}
+
+DATABASE = "rate.db"
+
+def get_db():
+    db = getattr(g, '_database', None)
+    db_is_new = not os.path.exists(DATABASE)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+    if db_is_new:        
+        with open("schema.sql", 'rt') as f:
+            schema = f.read()
+        db.executescript(schema)
+    return db
 
 def handlePayload(req):
+    global channel_food_order_count_dict
+    global channel_user_food_rate_dict
+
     if 'payload' not in req:
         logging.warning("invalid params for payload")
         return "Invalid Params"
     payload = json.loads(req['payload'])
-    print payload['actions']
-    print req
-    return statOrderBody
+    action = payload['actions'][0]['value']
+    channel = payload['channel']['id']
+    callback_id = int(payload['original_message']['attachments'][0]['callback_id'])
+    user = payload['user']['id']
+
+    if callback_id < channel_food_order_count_dict[channel]:
+        res = "This is an out of date food order rate."
+    elif callback_id > channel_food_order_count_dict[channel]:
+        logging.warn("callback_id > channel_food_order_count_dict[channel]")
+        print channel_food_order_count_dict[channel], callback_id, callback_id == channel_food_order_count_dict[channel]
+        res = "callback_id is newer than current food order, will check."
+    else:
+        # Users rate multiple times.
+        if user not in channel_user_food_rate_dict[channel]:
+            # It's a valid rate
+            saveRate(channel, user, action, callback_id)
+            channel_user_food_rate_dict[channel][user] = rateToScore[action]
+            res = "Successful, thank you for your rating."
+        else:
+            # It's an invalid rate
+            res = "You have already rated before, thanks."
+    return res
+
+
+def saveRate(channel, user, action, callback_id):
+    db = get_db()
+    value = user + '\',' + str(callback_id) + ',' + str(rateToScore[action])
+    db.execute("insert into rate (user, count, score) values ('"+value+")")    
+    db.commit()
+
 
 def handleJson(req):
+    global channel_food_order_count_dict
     if 'challenge' in req:
         return handleChallenge(req)
     elif 'event' in req:
@@ -42,8 +92,9 @@ def handleJson(req):
             else:
                 logging.warning("invalid params for today")
                 return "Invalid Params"  
+
         elif params[1] == 'stat':
-            statOrder(channel)
+            statOrder(channel, callback_id=1)
         elif params[1] == 'help':
             helperDoc(channel)
         elif params[1] == 'status':
@@ -61,6 +112,7 @@ def handleJson(req):
 
 def clearJobs(channel):
     global channel_jobs_dict
+
     if channel not in channel_jobs_dict:
         logging.warn("No record for this channel"+channel)
         send(channel, {"text":"No record for this channel."})
@@ -74,12 +126,14 @@ def clearJobs(channel):
 
 def showStatus(channel):
     global channel_jobs_dict
+    global channel_food_order_count_dict
+
     if channel not in channel_jobs_dict:
         logging.warn("No record for this channel.")
         send(channel, {"text":"No record for this channel."})
     else:
-        logging.debug("This channel has "+str(len(channel_jobs_dict[channel])/2)+" scheduled jobs.")
-        send(channel, {"text":"This channel has "+str(len(channel_jobs_dict[channel])/2)+" scheduled jobs."})
+        logging.debug("This channel has "+str(len(channel_jobs_dict[channel])/3)+" scheduled jobs.")
+        send(channel, {"text":"This channel has "+str(len(channel_jobs_dict[channel])/3)+" scheduled jobs."})
 
 def checkUserOfEvent(event, id):
     if 'user' not in event:
@@ -88,8 +142,13 @@ def checkUserOfEvent(event, id):
         return False
     return True
 
-def statOrder(channel):
-    send(channel, statOrderBody)
+def statOrder(channel, callback_id):
+    # init channel_user_food_rate_dict if needed
+    global channel_user_food_rate_dict
+    if channel not in channel_user_food_rate_dict:
+        channel_user_food_rate_dict[channel] = {}    
+
+    send(channel, statOrderBody(callback_id))
 
 def helperDoc(channel):
     send(channel, helperBody)
@@ -108,6 +167,19 @@ def postOrder(params, channel, date_str):
     return True
 
 def scheduleJob(channel, user, date_str):
+
+    # Food order count for current channel increment
+    global channel_food_order_count_dict
+    if channel not in channel_food_order_count_dict:
+        channel_food_order_count_dict[channel] = 1
+    else:
+        channel_food_order_count_dict[channel] = channel_food_order_count_dict[channel] + 1    
+
+    # init channel_user_food_rate_dict if needed
+    if channel not in channel_user_food_rate_dict:
+        channel_user_food_rate_dict[channel] = {}
+
+    # Prepare scheduleJob
     scheduler = BackgroundScheduler()
 
     remind_date = datetime.date.today()
@@ -118,16 +190,16 @@ def scheduleJob(channel, user, date_str):
     if channel not in channel_jobs_dict:
         channel_jobs_dict[channel] = []
     
-    # job1 = scheduler.add_job(lambda: sendAlert_1hour(channel), 'cron', year=remind_date.year, month=remind_date.month, 
-    #         day=remind_date.day, hour=10, minute=00)
-    job2 = scheduler.add_job(lambda: sendAlert_10min(channel), 'cron', year=remind_date.year, month=remind_date.month, 
+    job1 = scheduler.add_job(lambda: sendAlert_10min(channel), 'cron', year=remind_date.year, month=remind_date.month, 
             day=remind_date.day, hour=10, minute=50)    
-    job3 = scheduler.add_job(lambda: closeAlert(channel, user), 'cron', year=remind_date.year, month=remind_date.month, 
+    job2 = scheduler.add_job(lambda: closeAlert(channel, user), 'cron', year=remind_date.year, month=remind_date.month, 
             day=remind_date.day, hour=11, minute=00)
+    job3 = scheduler.add_job(lambda: statOrder(channel, channel_food_order_count_dict[channel]), 'cron', year=remind_date.year, month=remind_date.month, 
+            day=remind_date.day, hour=13, minute=10)
 
-    # channel_jobs_dict[channel].append(job1)
-    channel_jobs_dict[channel].append(job2)
-    channel_jobs_dict[channel].append(job3) 
+    channel_jobs_dict[channel].append(job1)
+    channel_jobs_dict[channel].append(job2) 
+    channel_jobs_dict[channel].append(job3)
          
     scheduler.start()
 

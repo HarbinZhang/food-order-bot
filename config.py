@@ -7,11 +7,19 @@ config = {
     "GCX98V9RN": "https://hooks.slack.com/services/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"
 }
 
-ephemeralBody = {
+rateToScore = {
+    'amazing' : 5,
+    'good' : 4,
+    'soso' : 2,
+    'bad' : 0
+}
+
+ephemeralBody = lambda text : {
   "response_type": "ephemeral",
   "replace_original": False,
-  "text": "Sorry, that didn't work. Please try again."
+  "text": text
 }
+
 
 helperBody = {
     "attachments": [
@@ -28,13 +36,13 @@ helperBody = {
 }
 
 
-statOrderBody = {
+statOrderBody = lambda callback_id : {
     "text": "Please rate your food experience",
     "attachments": [
         {
             "fallback": "Rate food",
             "title": "How do you feel about your food?",
-            "callback_id": "food_rate",
+            "callback_id": callback_id,
             "color": "#3AA3E3",
             "text": "This will affect following restaurants choice.",
             "actions": [
