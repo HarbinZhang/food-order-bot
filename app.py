@@ -35,7 +35,7 @@ def do_post():
         res = handlePayload(request.form)
         obj = {
   "response_type": "ephemeral",
-  "replace_original": False,
+  "replace_original": false,
   "text": "Sorry, that didn't work. Please try again."
 }
         return json.dumps(obj)
