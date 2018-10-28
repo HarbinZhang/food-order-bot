@@ -55,7 +55,7 @@ def handlePayload(req):
         else:
             # It's an invalid rate
             res = "You have already rated before, thanks."
-    return res
+    return ephemeralBody(res)
 
 
 def saveRate(channel, user, action, callback_id):
@@ -200,6 +200,8 @@ def scheduleJob(channel, user, date_str):
     channel_jobs_dict[channel].append(job1)
     channel_jobs_dict[channel].append(job2) 
     channel_jobs_dict[channel].append(job3)
+
+    statOrder(channel, channel_food_order_count_dict[channel])
          
     scheduler.start()
 
