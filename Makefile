@@ -4,3 +4,6 @@ init:
 
 run:
 	docker run -p 5000:5000 food-order-bot:latest
+
+rund:
+	docker run -p 5000:5000 -d food-order-bot:latest
