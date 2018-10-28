@@ -33,7 +33,7 @@ def do_post():
         return res
     elif contentType == 'application/x-www-form-urlencoded':
         res = handlePayload(request.form)
-        return "OK", 200
+        return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
     else:
         for it in request.form:
             print (it,file=sys.stdout)
