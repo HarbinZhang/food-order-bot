@@ -33,7 +33,7 @@ def do_post():
         return res
     elif contentType == 'application/x-www-form-urlencoded':
         res = handlePayload(request.form)
-        return 200
+        return "OK", 200
     else:
         for it in request.form:
             print (it,file=sys.stdout)
