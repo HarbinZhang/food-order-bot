@@ -33,11 +33,12 @@ def do_post():
         return res
     elif contentType == 'application/x-www-form-urlencoded':
         res = handlePayload(request.form)
-        return {
+        obj = {
   "response_type": "ephemeral",
-  "replace_original": false,
+  "replace_original": False,
   "text": "Sorry, that didn't work. Please try again."
 }
+        return json.dumps(obj), 200, {'ContentType':'application/json'}
     else:
         for it in request.form:
             print (it,file=sys.stdout)
