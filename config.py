@@ -7,7 +7,13 @@ config = {
     "GCX98V9RN": "https://hooks.slack.com/services/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"
 }
 
-helperBody ={
+ephemeralBody = {
+  "response_type": "ephemeral",
+  "replace_original": False,
+  "text": "Sorry, that didn't work. Please try again."
+}
+
+helperBody = {
     "attachments": [
         {
             "callback_id": "helper",
@@ -22,7 +28,7 @@ helperBody ={
 }
 
 
-statOrderBody ={
+statOrderBody = {
     "text": "Please rate your food experience",
     "attachments": [
         {

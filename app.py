@@ -5,7 +5,7 @@ import sys
 from src.helper import *
 import logging
 from apscheduler.schedulers.background import BackgroundScheduler
-from config import statOrderBody
+from config import ephemeralBody
 
 # TODO: more send options
 # TODO: auth 
@@ -33,12 +33,9 @@ def do_post():
         return res
     elif contentType == 'application/x-www-form-urlencoded':
         res = handlePayload(request.form)
-        obj = {
-  "response_type": "ephemeral",
-  "replace_original": false,
-  "text": "Sorry, that didn't work. Please try again."
-}
-        return json.dumps(obj)
+        obj = ephemeralBody
+        return json.dumps(obj), 200, {'Content-Type': 'application/json'}
+        # return json.d/
     else:
         for it in request.form:
             print (it,file=sys.stdout)
