@@ -38,7 +38,7 @@ def do_post():
   "replace_original": "false",
   "text": "Sorry, that didn't work. Please try again."
 }
-        return json.dumps(obj), 200, {'ContentType':'application/json'}
+        return json.dumps(obj)
     else:
         for it in request.form:
             print (it,file=sys.stdout)
