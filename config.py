@@ -14,6 +14,17 @@ rateToScore = {
     'bad' : 0
 }
 
+rateSummaryBody = lambda cnt, score : {
+    "attachments": [
+        {
+            "callback_id": "rateSummaryBody",
+            "color": "#3AA3E3",
+            "text": "Got " + score + " score in the last food order rate\n"+
+            "\tfrom " + cnt + " people's feedback",  
+        }
+    ]    
+}
+
 ephemeralBody = lambda text : {
   "response_type": "ephemeral",
   "replace_original": False,

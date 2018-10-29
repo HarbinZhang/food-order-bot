@@ -1,4 +1,4 @@
-from config import config, statOrderBody, helperBody, ephemeralBody, rateToScore
+from config import config, statOrderBody, helperBody, ephemeralBody, rateToScore, rateSummaryBody
 import requests
 import time, datetime
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -118,7 +118,7 @@ def clearJobs(channel):
         send(channel, {"text":"No record for this channel."})
     else:
         for job in channel_jobs_dict[channel]:
-            logging.debug("job removed: " + job)
+            logging.info("job removed: " + str(job))
             job.remove()
         channel_jobs_dict[channel] = []
         logging.info("Scheduled jobs have been cleared.")
@@ -175,8 +175,19 @@ def scheduleJob(channel, user, date_str):
     else:
         channel_food_order_count_dict[channel] = channel_food_order_count_dict[channel] + 1    
 
-    # init channel_user_food_rate_dict if needed
+    # send score summary
     if channel not in channel_user_food_rate_dict:
+        channel_user_food_rate_dict[channel] = {}
+    else:
+        sum_score = 0
+        for who in channel_user_food_rate_dict[channel]:
+            sum_score += channel_user_food_rate_dict[channel][who]
+        cnt = len(channel_user_food_rate_dict[channel])
+        if cnt == 0:
+            send(channel, rateSummaryBody(str(0), str(0)))
+        else:
+            send(channel, rateSummaryBody(str(cnt), str(sum_score/float(cnt))))
+            
         channel_user_food_rate_dict[channel] = {}
 
     # Prepare scheduleJob
