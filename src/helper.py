@@ -9,6 +9,7 @@ import os
 from flask import g
 import urllib2
 from bs4 import BeautifulSoup
+import threading
 
 channel_jobs_dict = {}
 channel_food_order_count_dict = {}
@@ -95,7 +96,9 @@ def handleJson(req):
         elif params[1].startswith('tom'):
             if postOrder(params, channel, 'tomorrow'):
                 sendRateSummary(channel)
-                channel_current_restaurant_dict[channel] = getRestaurantName(channel, params[2])              
+                t = threading.Thread(target=getRestaurantName,args=(channel, params[2]))
+                t.start()
+                # getRestaurantName(channel, params[2])              
                 scheduleJob(channel, user, 'tomorrow')
             else:
                 logging.warning("invalid params for tomorrow")
@@ -103,7 +106,8 @@ def handleJson(req):
         elif params[1].startswith('tod'):
             if postOrder(params, channel, 'today'):
                 sendRateSummary(channel)
-                channel_current_restaurant_dict[channel] = getRestaurantName(channel, params[2])              
+                t = threading.Thread(target=getRestaurantName,args=(channel, params[2]))
+                t.start()             
                 scheduleJob(channel, user, 'today')
             else:
                 logging.warning("invalid params for today")
@@ -188,6 +192,7 @@ def postOrder(params, channel, date_str):
     return True
 
 def getRestaurantName(channel, url):
+    global channel_current_restaurant_dict
     try:
         res = urllib2.urlopen(url)
     except Exception as e:
@@ -199,8 +204,9 @@ def getRestaurantName(channel, url):
     name = soup.title.string.split('Delivery')[0]
     logging.info("Restaurant name: " + name)
     print("Restaurant name: " + name)
-    send(channel, {"text":"The restaurant: " + name})
-    return name
+    channel_current_restaurant_dict[channel] = name
+    send(channel, {"text":"Restaurant: " + name})
+    
 
 def sendRateSummary(channel):
     global channel_current_restaurant_dict
