@@ -7,11 +7,13 @@ import logging
 import sqlite3
 import os
 from flask import g
-
+import urllib2
+from bs4 import BeautifulSoup
 
 channel_jobs_dict = {}
 channel_food_order_count_dict = {}
 channel_user_food_rate_dict = {}
+channel_current_restaurant_dict = {}
 
 DATABASE = "rate.db"
 
@@ -30,6 +32,7 @@ def handlePayload(req):
     global channel_food_order_count_dict
     global channel_user_food_rate_dict
 
+    # payload is for food rate button event
     if 'payload' not in req:
         logging.warning("invalid params for payload")
         return "Invalid Params"
@@ -44,29 +47,38 @@ def handlePayload(req):
     elif callback_id > channel_food_order_count_dict[channel]:
         logging.warn("callback_id > channel_food_order_count_dict[channel]")
         print channel_food_order_count_dict[channel], callback_id, callback_id == channel_food_order_count_dict[channel]
-        res = "callback_id is newer than current food order, will check."
+        res = "Callback_id is newer than current food order, will check."
     else:
         # Users rate multiple times.
         if user not in channel_user_food_rate_dict[channel]:
             # It's a valid rate
-            saveRate(channel, user, action, callback_id)
+            saveUserRate(channel, user, action, callback_id)
             channel_user_food_rate_dict[channel][user] = rateToScore[action]
             res = "Successful, thank you for your rating."
+            print("User: %s click %s", user, action)
         else:
             # It's an invalid rate
             res = "You have already rated before, thanks."
     return ephemeralBody(res)
 
 
-def saveRate(channel, user, action, callback_id):
+def saveUserRate(channel, user, action, callback_id):
     db = get_db()
-    value = user + '\',' + str(callback_id) + ',' + str(rateToScore[action])
-    db.execute("insert into rate (user, count, score) values ('"+value+")")    
+    value = user + '\',' + str(callback_id) + ',' + str(rateToScore[action]) + ',' + channel
+    db.execute("insert into user_rate (user, count, score, channel) values ('"+value+")")    
     db.commit()
 
+def saveRestaurantRate(channel, count, score):
+    global channel_current_restaurant_dict
+    db = get_db()
+    restaurant = channel_current_restaurant_dict[channel]
+    value = restaurant + '\',' + str(count) + ',' + str(score) + ',' + channel
+    db.execute("insert into restaurant_rate (user, count, score, channel) values ('"+value+")")    
+    db.commit()
 
 def handleJson(req):
     global channel_food_order_count_dict
+    global channel_current_restaurant_dict
     if 'challenge' in req:
         return handleChallenge(req)
     elif 'event' in req:
@@ -82,12 +94,16 @@ def handleJson(req):
 
         elif params[1].startswith('tom'):
             if postOrder(params, channel, 'tomorrow'):
+                sendRateSummary(channel)
+                channel_current_restaurant_dict[channel] = getRestaurantName(params[2])              
                 scheduleJob(channel, user, 'tomorrow')
             else:
                 logging.warning("invalid params for tomorrow")
                 return "Invalid Params"
         elif params[1].startswith('tod'):
             if postOrder(params, channel, 'today'):
+                sendRateSummary(channel)
+                channel_current_restaurant_dict[channel] = getRestaurantName(params[2])              
                 scheduleJob(channel, user, 'today')
             else:
                 logging.warning("invalid params for today")
@@ -119,7 +135,10 @@ def clearJobs(channel):
     else:
         for job in channel_jobs_dict[channel]:
             logging.info("job removed: " + str(job))
-            job.remove()
+            try:
+                job.remove()
+            except Exception as e:
+                logging.warn("Cannot remove job in clear" + e)
         channel_jobs_dict[channel] = []
         logging.info("Scheduled jobs have been cleared.")
         send(channel, {"text":"Scheduled jobs have been cleared."})
@@ -159,21 +178,31 @@ def postOrder(params, channel, date_str):
     url = params[2]
     if len(url) == 0:
         return False
-    name = params[3] if (len(params)==4) else "Demo"
+    name = params[3:] if (len(params)>=4) else "Demo"
     body = '<!here> ' + url + '\nFor '+ date_str + '\'s ' + name + ' meeting\'s order\n'
     body += 'Order will be closed at 11:00AM tomorrow\nThanks!'
     body = {"text":body}
     send(channel, body)
+
     return True
 
-def scheduleJob(channel, user, date_str):
+def getRestaurantName(url):
+    try:
+        res = urllib2.urlopen(url)
+    except Exception as e:
+        # print (e)
+        logging.warn("getRestaurantName: " + e.message)
+        return None
+    html = res.read()
+    soup = BeautifulSoup(html, 'html.parser')
+    name = soup.title.string.split('Delivery')[0]
+    logging.info("Restaurant name: " + name)
+    print("Restaurant name: " + name)
+    return name
 
-    # Food order count for current channel increment
+def sendRateSummary(channel):
+    global channel_current_restaurant_dict
     global channel_food_order_count_dict
-    if channel not in channel_food_order_count_dict:
-        channel_food_order_count_dict[channel] = 1
-    else:
-        channel_food_order_count_dict[channel] = channel_food_order_count_dict[channel] + 1    
 
     # send score summary
     if channel not in channel_user_food_rate_dict:
@@ -184,11 +213,22 @@ def scheduleJob(channel, user, date_str):
             sum_score += channel_user_food_rate_dict[channel][who]
         cnt = len(channel_user_food_rate_dict[channel])
         if cnt == 0:
-            send(channel, rateSummaryBody(str(0), str(0)))
+            # send(channel, rateSummaryBody(str(0), str(0)))
+            send(channel, {"text": "Here is a new start"})
         else:
-            send(channel, rateSummaryBody(str(cnt), str(sum_score/float(cnt))))
-            
-        channel_user_food_rate_dict[channel] = {}
+            restaurant = channel_current_restaurant_dict[channel]
+            saveRestaurantRate(channel, cnt, sum_score/cnt)
+            send(channel, rateSummaryBody(restaurant,str(cnt), str(sum_score/cnt)))    
+
+        channel_user_food_rate_dict[channel] = {}    
+
+def scheduleJob(channel, user, date_str):
+    # Food order count for current channel increment
+    global channel_food_order_count_dict
+    if channel not in channel_food_order_count_dict:
+        channel_food_order_count_dict[channel] = 1
+    else:
+        channel_food_order_count_dict[channel] = channel_food_order_count_dict[channel] + 1
 
     # Prepare scheduleJob
     scheduler = BackgroundScheduler()
@@ -217,6 +257,7 @@ def scheduleJob(channel, user, date_str):
 def sendAlert_1hour(channel):
     body = {"text":"<!here> food order will be closed in 1 hour."}
     send(channel, body)
+
 
 def sendAlert_10min(channel):
     body = {"text":"<!here> food order will be closed in 10 min."}

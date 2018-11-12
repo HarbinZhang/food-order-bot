@@ -8,18 +8,19 @@ config = {
 }
 
 rateToScore = {
-    'amazing' : 5,
-    'good' : 4,
-    'soso' : 2,
+    'amazing' : 100,
+    'good' : 90,
+    'soso' : 60,
     'bad' : 0
 }
 
-rateSummaryBody = lambda cnt, score : {
+rateSummaryBody = lambda restaurant, cnt, score : {
     "attachments": [
         {
             "callback_id": "rateSummaryBody",
             "color": "#3AA3E3",
-            "text": "Got " + score + " score in the last food order rate\n"+
+            "title": restaurant,
+            "text": "Got " + score + "/100 score in the last food order rate\n"+
             "\tfrom " + cnt + " people's feedback",  
         }
     ]    
