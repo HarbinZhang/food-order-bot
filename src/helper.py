@@ -95,7 +95,7 @@ def handleJson(req):
         elif params[1].startswith('tom'):
             if postOrder(params, channel, 'tomorrow'):
                 sendRateSummary(channel)
-                channel_current_restaurant_dict[channel] = getRestaurantName(params[2])              
+                channel_current_restaurant_dict[channel] = getRestaurantName(channel, params[2])              
                 scheduleJob(channel, user, 'tomorrow')
             else:
                 logging.warning("invalid params for tomorrow")
@@ -103,7 +103,7 @@ def handleJson(req):
         elif params[1].startswith('tod'):
             if postOrder(params, channel, 'today'):
                 sendRateSummary(channel)
-                channel_current_restaurant_dict[channel] = getRestaurantName(params[2])              
+                channel_current_restaurant_dict[channel] = getRestaurantName(channel, params[2])              
                 scheduleJob(channel, user, 'today')
             else:
                 logging.warning("invalid params for today")
@@ -179,6 +179,7 @@ def postOrder(params, channel, date_str):
     if len(url) == 0:
         return False
     name = params[3:] if (len(params)>=4) else "Demo"
+    name = ''.join(name)
     body = '<!here> ' + url + '\nFor '+ date_str + '\'s ' + name + ' meeting\'s order\n'
     body += 'Order will be closed at 11:00AM tomorrow\nThanks!'
     body = {"text":body}
@@ -186,7 +187,7 @@ def postOrder(params, channel, date_str):
 
     return True
 
-def getRestaurantName(url):
+def getRestaurantName(channel, url):
     try:
         res = urllib2.urlopen(url)
     except Exception as e:
@@ -198,6 +199,7 @@ def getRestaurantName(url):
     name = soup.title.string.split('Delivery')[0]
     logging.info("Restaurant name: " + name)
     print("Restaurant name: " + name)
+    send(channel, {"text":"The restaurant: " + name})
     return name
 
 def sendRateSummary(channel):
@@ -214,7 +216,8 @@ def sendRateSummary(channel):
         cnt = len(channel_user_food_rate_dict[channel])
         if cnt == 0:
             # send(channel, rateSummaryBody(str(0), str(0)))
-            send(channel, {"text": "Here is a new start"})
+            # send(channel, {"text": "Here is a new start"})
+            logging.info("Here is a new start food order after restarting program.")
         else:
             restaurant = channel_current_restaurant_dict[channel]
             saveRestaurantRate(channel, cnt, sum_score/cnt)
