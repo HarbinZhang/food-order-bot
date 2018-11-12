@@ -183,7 +183,7 @@ def postOrder(params, channel, date_str):
     if len(url) == 0:
         return False
     name = params[3:] if (len(params)>=4) else "Demo"
-    name = ''.join(name)
+    name = ' '.join(name)
     body = '<!here> ' + url + '\nFor '+ date_str + '\'s ' + name + ' meeting\'s order\n'
     body += 'Order will be closed at 11:00AM tomorrow\nThanks!'
     body = {"text":body}
