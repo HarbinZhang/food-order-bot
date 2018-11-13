@@ -56,7 +56,7 @@ def handlePayload(req):
             saveUserRate(channel, user, action, callback_id)
             channel_user_food_rate_dict[channel][user] = rateToScore[action]
             res = "Successful, thank you for your rating."
-            print("User: %s click %s", user, action)
+            print("User: {} click {}".format(user, action))
         else:
             # It's an invalid rate
             res = "You have already rated before, thanks."
@@ -65,16 +65,20 @@ def handlePayload(req):
 
 def saveUserRate(channel, user, action, callback_id):
     db = get_db()
-    value = user + '\',' + str(callback_id) + ',' + str(rateToScore[action]) + ',' + channel
-    db.execute("insert into user_rate (user, count, score, channel) values ('"+value+")")    
+    value = (user, str(callback_id), str(rateToScore[action]), channel)
+    sql = '''INSERT INTO user_rate(user, count, score, channel)
+    VALUES(?,?,?,?)'''  
+    db.execute(sql, value)
     db.commit()
 
 def saveRestaurantRate(channel, count, score):
     global channel_current_restaurant_dict
     db = get_db()
     restaurant = channel_current_restaurant_dict[channel]
-    value = restaurant + '\',' + str(count) + ',' + str(score) + ',' + channel
-    db.execute("insert into restaurant_rate (user, count, score, channel) values ('"+value+")")    
+    value = (restaurant, str(count), str(score), channel)
+    sql = '''INSERT INTO restaurant_rate(user, count, score, channel)
+    VALUES(?,?,?,?)'''
+    db.execute(sql, value)    
     db.commit()
 
 def handleJson(req):
