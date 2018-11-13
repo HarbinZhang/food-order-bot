@@ -75,7 +75,7 @@ statOrderBody = lambda callback_id : {
                 {
                     "name": "action",
                     "type": "button",
-                    "text": "So-so",
+                    "text": "Moderate",
                     "style": "",
                     "value": "moderate"
                 },  
