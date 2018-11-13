@@ -76,7 +76,7 @@ def saveRestaurantRate(channel, count, score):
     db = get_db()
     restaurant = channel_current_restaurant_dict[channel]
     value = (restaurant, str(count), str(score), channel)
-    sql = '''INSERT INTO restaurant_rate(user, count, score, channel)
+    sql = '''INSERT INTO restaurant_rate(restaurant, count, score, channel)
     VALUES(?,?,?,?)'''
     db.execute(sql, value)    
     db.commit()

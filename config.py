@@ -10,7 +10,7 @@ config = {
 rateToScore = {
     'amazing' : 100,
     'good' : 90,
-    'soso' : 60,
+    'moderate' : 60,
     'bad' : 0
 }
 
@@ -77,7 +77,7 @@ statOrderBody = lambda callback_id : {
                     "type": "button",
                     "text": "So-so",
                     "style": "",
-                    "value": "soso"
+                    "value": "moderate"
                 },  
                 {
                     "name": "action",
