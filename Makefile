@@ -7,3 +7,6 @@ run:
 
 rund:
 	docker run -p 5000:5000 -d food-order-bot:latest
+
+stop:
+	docker stop $(docker ps -aq)
