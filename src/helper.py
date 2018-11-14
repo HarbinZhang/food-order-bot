@@ -261,7 +261,7 @@ def scheduleJob(channel, user, date_str):
     job2 = scheduler.add_job(lambda: closeAlert(channel, user), 'cron', year=remind_date.year, month=remind_date.month, 
             day=remind_date.day, hour=11, minute=00)
     job3 = scheduler.add_job(lambda: statOrder(channel, channel_food_order_count_dict[channel]), 'cron', year=remind_date.year, month=remind_date.month, 
-            day=remind_date.day, hour=14, minute=23)
+            day=remind_date.day, hour=13, minute=10)
 
     channel_jobs_dict[channel].append(job1)
     channel_jobs_dict[channel].append(job2) 
