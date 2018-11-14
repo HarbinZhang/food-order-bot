@@ -54,7 +54,7 @@ def handlePayload(req):
         print channel_user_food_rate_dict[channel]
         if user not in channel_user_food_rate_dict[channel]:
             # It's a valid rate
-            logging.info("Get valid rate with callback_id: " + callback_id)
+            logging.info("Get valid rate with callback_id: " + str(callback_id))
             saveUserRate(channel, user, action, callback_id)
             channel_user_food_rate_dict[channel][user] = rateToScore[action]
             res = "Successful, thank you for your rating."
@@ -261,7 +261,7 @@ def scheduleJob(channel, user, date_str):
     job2 = scheduler.add_job(lambda: closeAlert(channel, user), 'cron', year=remind_date.year, month=remind_date.month, 
             day=remind_date.day, hour=11, minute=00)
     job3 = scheduler.add_job(lambda: statOrder(channel, channel_food_order_count_dict[channel]), 'cron', year=remind_date.year, month=remind_date.month, 
-            day=remind_date.day, hour=14, minute=20)
+            day=remind_date.day, hour=14, minute=23)
 
     channel_jobs_dict[channel].append(job1)
     channel_jobs_dict[channel].append(job2) 
