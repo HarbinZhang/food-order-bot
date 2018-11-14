@@ -51,8 +51,10 @@ def handlePayload(req):
         res = "Callback_id is newer than current food order, will check."
     else:
         # Users rate multiple times.
+        print channel_user_food_rate_dict[channel]
         if user not in channel_user_food_rate_dict[channel]:
             # It's a valid rate
+            logging.info("Get valid rate with callback_id: " + callback_id)
             saveUserRate(channel, user, action, callback_id)
             channel_user_food_rate_dict[channel][user] = rateToScore[action]
             res = "Successful, thank you for your rating."
@@ -153,7 +155,7 @@ def clearJobs(channel):
 
 def showStatus(channel):
     global channel_jobs_dict
-    global channel_food_order_count_dict
+    # global channel_food_order_count_dict
 
     if channel not in channel_jobs_dict:
         logging.warn("No record for this channel.")
