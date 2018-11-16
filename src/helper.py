@@ -43,8 +43,11 @@ def handlePayload(req):
     callback_id = int(payload['original_message']['attachments'][0]['callback_id'])
     user = payload['user']['id']
 
-    if callback_id < channel_food_order_count_dict[channel]:
-        res = "This is an out of date food order rate."
+
+    if channel not in channel_food_order_count_dict:
+        res = "It is an invalid food order review."
+    elif callback_id < channel_food_order_count_dict[channel]:
+        res = "This is an out of date food order review."
     elif callback_id > channel_food_order_count_dict[channel]:
         logging.warn("callback_id > channel_food_order_count_dict[channel]")
         print channel_food_order_count_dict[channel], callback_id, callback_id == channel_food_order_count_dict[channel]
@@ -57,7 +60,7 @@ def handlePayload(req):
             logging.info("Get valid rate with callback_id: " + str(callback_id))
             saveUserRate(channel, user, action, callback_id)
             channel_user_food_rate_dict[channel][user] = rateToScore[action]
-            res = "Successful, thank you for your rating."
+            res = "Successful, thank you for your review."
             print("User: {} click {}".format(user, action))
         else:
             # It's an invalid rate

@@ -49,10 +49,10 @@ helperBody = {
 
 
 statOrderBody = lambda callback_id : {
-    "text": "Please rate your food experience",
+    "text": "Please review your food experience",
     "attachments": [
         {
-            "fallback": "Rate food",
+            "fallback": "Review food",
             "title": "How do you feel about your food?",
             "callback_id": callback_id,
             "color": "#3AA3E3",
