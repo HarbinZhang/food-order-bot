@@ -4,18 +4,18 @@ The food-order-bot is helping people order food. It's designed for two goals:
 2. Collect people food reviews and provide restaurant recommendation based on it.
 
 # Usage
-- help
+#### help  
 Food-order-bot provides options for today or tomorrow food order.
 ![](img/help.png)
-- start
+#### start
 ![](img/order.png)
-- remind
+#### remind
 ![](img/reminder.png)
-- review
+#### review
 ![](img/rate.png)
-- review result
+#### review result
 ![](img/review.png)
-- full view
+#### full view
 ![](img/full.png)
 
 ### High level
