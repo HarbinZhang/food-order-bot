@@ -151,7 +151,7 @@ def clearJobs(channel):
             try:
                 job.remove()
             except Exception as e:
-                logging.warn("Cannot remove job in clear" + e)
+                logging.warn("Cannot remove job in clear" + e.message)
         channel_jobs_dict[channel] = []
         logging.info("Scheduled jobs have been cleared.")
         send(channel, {"text":"Scheduled jobs have been cleared."})
