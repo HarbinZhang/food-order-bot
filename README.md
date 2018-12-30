@@ -14,9 +14,9 @@ Food-order-bot provides options for today or tomorrow food order.
 - review
 ![](img/rate.png)
 - review result
-![](img/PeopleReview.png)
+![](img/review.png)
 - full view
-![](img/Full.png)
+![](img/full.png)
 
 ### High level
 The slack-bot is a HTTP server handling three HTTP req:
