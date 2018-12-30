@@ -1,7 +1,22 @@
-# slack-bot
-The slack-bot for now is mostly a food order bot. It's designed for two goals:
+# food-order-bot
+The food-order-bot is helping people order food. It's designed for two goals:
 1. Remind people to order food and close food order.
 2. Collect people food reviews and provide restaurant recommendation based on it.
+
+# Usage
+- help
+Food-order-bot provides options for today or tomorrow food order.
+![](img/help.png)
+- start
+![](img/order.png)
+- remind
+![](img/reminder.png)
+- review
+![](img/rate.png)
+- review result
+![](img/PeopleReview.png)
+- full view
+![](img/Full.png)
 
 ### High level
 The slack-bot is a HTTP server handling three HTTP req:
