@@ -42,9 +42,9 @@ The slack-bot is a HTTP server handling three HTTP req:
 ### docker
 1. [Dockerfile](Dockerfile)
 
-
 ### TODO
 1. Food recommendation.
 2. database init: Start from the latest record id if database already exists. 
 3. Remind time self-defined.
-4. Deduplicate if multiple order message exist.
+4. Deduplicate multiple order message with the same order-url.
+5. Dockerfile optimization.
