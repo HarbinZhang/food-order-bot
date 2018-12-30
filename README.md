@@ -22,7 +22,7 @@ food-order-bot provides options for today or tomorrow food order.
 ![](img/review.png)
 ### full view
 1. Everyone can use food-order-bot to start order-reminder.
-2. Only
+2. Only person who starts it will receive close-order reminder.
 ![](img/full.png)
 # Implementation
 ### High level
@@ -47,4 +47,4 @@ The slack-bot is a HTTP server handling three HTTP req:
 1. Food recommendation.
 2. database init: Start from the latest record id if database already exists. 
 3. Remind time self-defined.
-
+4. Deduplicate if multiple order message exist.
