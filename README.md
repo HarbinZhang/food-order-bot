@@ -6,7 +6,7 @@ The food-order-bot is helping people order food. It's designed for two goals:
 # Usage
 - help
 Food-order-bot provides options for today or tomorrow food order.
-![](img/help.png =250x)
+![](img/help.png =100x20)
 - start
 ![](img/order.png)
 - remind
