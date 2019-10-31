@@ -1,5 +1,4 @@
 config = {
-    "foodUrl" : "https://hooks.slack.com/services/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",
     "test1Url" : "https://hooks.slack.com/services/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",
     "test2Url" : "https://hooks.slack.com/services/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",
     "G4G6YHQM6": "https://hooks.slack.com/services/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",
